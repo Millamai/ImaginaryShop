@@ -3,11 +3,14 @@
 @{
 }
 <section class="py-5">
+    @Html.AntiForgeryToken()
+    <form asp-page-handler="GeoLocation" method="post" asp-page="Index">   <button type="submit"></button></form>
     <div class="container px-4 px-lg-5 mt-5">
         <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-           @foreach (var item in Model.Products)
+                 @foreach (var item in Model.Products)
             {
-                <div class="col mb-5">
+
+              <div class="col mb-5">
                     <div class="card h-100">
                         <!-- Product image-->
                         <img class="card-img-top" src="~/imgs/@item.ImageUrl" />
@@ -17,19 +20,61 @@
                                 <!-- Product name-->
                                 <h5 class="fw-bolder"></h5>
                                 <!-- Product price-->
-                                @item.Price DKK
+                                @item.Price @item.Currency
                             </div>
                         </div>
                         <!-- Product actions-->
                         <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">View options</a></div>
+                            <div class="text-center"><a class="btn btn-outline-dark mt-auto add-to-cart" data-product-id="@item.ProductID" href="#">Køb</a></div>
+
+
+
+                            <button type="submit">KØB</button>
+                            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Se mere</a></div>
                         </div>
                     </div>
                 </div>
+               
             }
             
          
            
         </div>
     </div>
+    <script>
+        $(document).ready(function () {
+            $('.add-to-cart').click(function (event) {
+                event.preventDefault();
+                var productId = $(this).data('product-id'); // Hent produkt-id fra knappens data-attribut
+
+                $.ajax({
+                    type: "POST",
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                    url: '/ShoppingBasket?Handler=Add',
+                    data: { productId: productId },
+                    success: function (data) {
+                        $('#totalPrice').text(data.total);
+                      
+                    }
+                });
+                // $.ajax({
+                //     type: "POST",
+                //     url: '/ShoppingBasket?Handler=Add',
+                //     data: productId: productId,
+                //     beforeSend: function (xhr) {
+                //         xhr.setRequestHeader("XSRF-TOKEN",
+                //             $('input:hidden[name="__RequestVerificationToken"]').val());
+                //     },
+                //     contentType: "application/json; charset=utf-8",
+                //     dataType: "json"
+                // }).done(function (data) {
+                //     console.log(data.result);
+                // })
+            });
+        });
+    </script>
+
 </section>

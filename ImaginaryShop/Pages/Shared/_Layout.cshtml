@@ -1,5 +1,6 @@
 ﻿@using ImaginaryShop.Model.Services
 @inject CategoryService CategoryService
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 <!DOCTYPE html>
 <html lang="en">
@@ -9,14 +10,80 @@
     <title>@ViewData["Title"] - ImaginaryShop</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="~/ImaginaryShop.styles.css" asp-append-version="true" />
-
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=shopping_cart" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=person" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+   
 </head>
 <body>
+ 
     <header>
 
-        <div class="d-flex justify-content-between">
+      
+
+        <div class="row" style="padding:10px">
+            <div class="col-lg-3 col-md-3">
+              @*   <div class="header__logo">
+                    <a href="./index.html"><img src="img/logo.png" alt=""></a>
+                </div> *@
+            </div>
+           @*  <div class="col-lg-6 col-md-6">
+                <nav class="header__menu mobile-menu">
+                    <ul>
+                        <li><a href="./index.html">Home</a></li>
+                        <li class="active"><a href="./shop.html">Shop</a></li>
+                        <li>
+                            <a href="#">Pages</a>
+                            <ul class="dropdown">
+                                <li><a href="./about.html">About Us</a></li>
+                                <li><a href="./shop-details.html">Shop Details</a></li>
+                                <li><a href="./shopping-cart.html">Shopping Cart</a></li>
+                                <li><a href="./checkout.html">Check Out</a></li>
+                                <li><a href="./blog-details.html">Blog Details</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="./blog.html">Blog</a></li>
+                        <li><a href="./contact.html">Contacts</a></li>
+                    </ul>
+                </nav>
+            </div> *@
+            <div class="col-lg-12 col-md-12">
+                <div class="flex-right">
+                   @*  <a href="#" class="search-switch"><img src="imgs/search.png" alt=""></a>
+
+                    <a asp-page="/CreateAccount">aaaa
+                   
+                        <span class="material-symbols-outlined">
+                            person
+                        </span>
+                    </a> *@
+
+
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle currencyBtn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+                            @{
+                                var currency = HttpContextAccessor.HttpContext.Request.Cookies["currency"] ?? "DKK"; // Standardværdi: DKK
+                            }
+                            @currency
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="/currency/set/DKK">DKK</a>
+                            <a class="dropdown-item" href="/currency/set/&euro;">&euro;</a>
+                        </div>
+                    </div>
+
+@* 
+                    <div class="price" id="totalPrice"> 0.00</div>
+                    <div style="width:10px"></div> *@
+                </div>
+               
+            </div>
+        </div>
+       @*  <div class="d-flex justify-content-between">
             <div></div><div>
                 <input type="text" />
             </div>
@@ -30,10 +97,10 @@
                     shopping_cart
                 </span> xxx DKK
             </div>
-        </div>
+        </div> *@
         
 
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3" >
+       @*  <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3" >
             
             <div class="container" style="background:#a6beb6; width:100%">
                 <!--  <a class="navbar-brand" asp-area="" asp-page="/Index">ImaginaryShop</a>
@@ -56,10 +123,11 @@
 
 
             </div>
-        </nav>
+        </nav> *@
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+   
+    <div class="xl-container">
+        <main role="main" >
             @RenderBody()
         </main>
     </div>
@@ -70,8 +138,7 @@
         </div>
     </footer>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+   
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)

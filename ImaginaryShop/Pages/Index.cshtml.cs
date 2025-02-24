@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Diagnostics;
 
 namespace ImaginaryShop.Pages
 {
@@ -15,6 +16,15 @@ namespace ImaginaryShop.Pages
         public void OnGet()
         {
 
+        }
+
+        [HttpPost]
+        public IActionResult OnPostGeoLocation()
+        {
+            // Just to test that it actually gets called
+            Debug.WriteLine("OnPostGeoLocation CALLED ####################################");
+
+            return Page();
         }
     }
 }

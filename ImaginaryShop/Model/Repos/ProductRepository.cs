@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using System.Data;
 using System.Diagnostics;
 
 namespace ImaginaryShop.Model.Repos
@@ -34,13 +35,15 @@ namespace ImaginaryShop.Model.Repos
         }
 
         // Read
-        public Product GetProductById(int productId)
+        public Product GetProductById(int productId, string currency)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string query = "SELECT * FROM Products WHERE ProductID = @ProductID";
-                SqlCommand command = new SqlCommand(query, connection);
+             
+
+                SqlCommand command = new SqlCommand("GetProductInCurrency", connection);
                 command.Parameters.AddWithValue("@ProductID", productId);
+                command.Parameters.AddWithValue("@Currency", currency);
 
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
@@ -48,49 +51,93 @@ namespace ImaginaryShop.Model.Repos
                 {
                     return new Product
                     {
-                        ProductID = (int)reader["ProductID"],
-                        ProductName = reader["ProductName"].ToString(),
-                        Description = reader["Description"].ToString(),
-                        Price = (decimal)reader["Price"],
-                        StockQuantity = (int)reader["StockQuantity"],
-                        Category = reader["Category"].ToString(),
-                        ImageUrl = reader["ImageUrl"].ToString(),
-                        CreatedAt = (DateTime)reader["CreatedAt"],
-                        UpdatedAt = (DateTime)reader["UpdatedAt"]
+                        ProductID = reader.GetInt32(reader.GetOrdinal("ProductId")),
+                        ProductName = reader.GetString(reader.GetOrdinal("ProductName")),
+                        Description = reader.GetString(reader.GetOrdinal("Description")),
+                        Price = reader.GetDecimal(reader.GetOrdinal("Price")),
+                        StockQuantity = reader.GetInt32(reader.GetOrdinal("StockQuantity")),
+                        Category = reader.GetString(reader.GetOrdinal("Category")),
+                        ImageUrl = reader.GetString(reader.GetOrdinal("ImageUrl")),
+                        CreatedAt = reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
+                        UpdatedAt = reader.GetDateTime(reader.GetOrdinal("UpdatedAt")),
+                        Currency = reader.GetString(reader.GetOrdinal("NickName"))
                     };
                 }
                 return null;
             }
         }
 
-        public IEnumerable<Product> GetAllProducts()
+        //public IEnumerable<Product> GetAllProducts(string currency)
+        //{
+        //    var products = new List<Product>();
+        //    using (SqlConnection connection = new SqlConnection(connectionString))
+        //    {
+        //        string query = "SELECT * FROM Products";
+        //        SqlCommand command = new SqlCommand(query, connection);
+
+        //        connection.Open();
+        //        SqlDataReader reader = command.ExecuteReader();
+        //        while (reader.Read())
+        //        {
+
+        //            products.Add(new Product
+        //            {
+        //                ProductID = (int)reader["ProductID"],
+        //                ProductName = reader["ProductName"].ToString(),
+        //                Description = reader["Description"].ToString(),
+        //                Price = (decimal)reader["Price"],
+        //                StockQuantity = (int)reader["StockQuantity"],
+        //                Category = reader["Category"].ToString(),
+        //                ImageUrl = reader["ImageUrl"].ToString(),
+        //                CreatedAt = (DateTime)reader["CreatedAt"],
+        //                UpdatedAt = (DateTime)reader["UpdatedAt"]
+        //            });
+        //        }
+        //    }
+        //    return products;
+        //}
+
+        public IEnumerable<Product> GetAllProducts(string currency)
         {
             var products = new List<Product>();
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string query = "SELECT * FROM Products";
-                SqlCommand command = new SqlCommand(query, connection);
-              
-                connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
+                Debug.WriteLine("CUR" +currency);
+                using (SqlCommand cmd = new SqlCommand("GetAllProductInCurrency", connection))
                 {
-                    
-                    products.Add(new Product
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    // Tilføj parametre til stored procedure
+                    cmd.Parameters.AddWithValue("@Currency", currency);
+
+
+
+                    connection.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
                     {
-                        ProductID = (int)reader["ProductID"],
-                        ProductName = reader["ProductName"].ToString(),
-                        Description = reader["Description"].ToString(),
-                        Price = (decimal)reader["Price"],
-                        StockQuantity = (int)reader["StockQuantity"],
-                        Category = reader["Category"].ToString(),
-                        ImageUrl = reader["ImageUrl"].ToString(),
-                        CreatedAt = (DateTime)reader["CreatedAt"],
-                        UpdatedAt = (DateTime)reader["UpdatedAt"]
-                    });
+                        while (reader.Read())
+                        {
+                            products.Add(new Product
+                            {
+                                ProductID = reader.GetInt32(reader.GetOrdinal("ProductId")),
+                                ProductName = reader.GetString(reader.GetOrdinal("ProductName")),
+                                Description = reader.GetString(reader.GetOrdinal("Description")),
+                                Price = reader.GetDecimal(reader.GetOrdinal("Price")),
+                                StockQuantity = reader.GetInt32(reader.GetOrdinal("StockQuantity")),
+                                Category = reader.GetString(reader.GetOrdinal("Category")),
+                                ImageUrl = reader.GetString(reader.GetOrdinal("ImageUrl")),
+                                CreatedAt = reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
+                                UpdatedAt = reader.GetDateTime(reader.GetOrdinal("UpdatedAt")),
+                                Currency = reader.GetString(reader.GetOrdinal("NickName"))
+                            });
+                        }
+                    }
+
+
+
                 }
+                return products;
             }
-            return products;
         }
 
         // Update

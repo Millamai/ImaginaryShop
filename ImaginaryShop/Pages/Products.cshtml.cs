@@ -14,7 +14,15 @@ namespace ImaginaryShop.Pages
         public void OnGet()
         {
             ProductRepository r = new ProductRepository("Server=localhost;Database=ImaginaryShop;Integrated Security=True;;Encrypt=False");
-            Products = r.GetAllProducts();
+
+
+            //Her aflæser vi lige om currency cookie er sat
+            string currency = null;
+            if (Request.Cookies.TryGetValue("currency", out string currencyValue))
+            {
+                currency = currencyValue;
+            }
+            Products = r.GetAllProducts(currency);
         }
     }
 }
