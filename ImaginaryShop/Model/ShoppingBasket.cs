@@ -1,19 +1,22 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 
 namespace ImaginaryShop.Model
 {
     public class ShoppingBasket
     {
 
-        public List<BasketProductDecorator> Products { get; private set; }
+        // TODO: Implementer når brugeren ændrer currency
+
+        public List<BasketProductDecorator> Products { get; set; } = new();
+       
         public ShoppingBasket()
         {
-            Products = new List<BasketProductDecorator>();
+            
         }
 
         public double GetTotal()
         {
-
             return (double)Products.Sum(x => x.Quantity * x.Product.Price);
         }
 
@@ -21,11 +24,47 @@ namespace ImaginaryShop.Model
         {
             return Products.Sum(x => x.Quantity);
 
+        }
+
+
+
+
+
+        /// <summary>
+        /// Tilføjer et product til indkøbskurven. Hvis produktet allerede findes, så tælles antallet bare op. Hvis produktet ikke findes, tilføjes det
+        /// </summary>
+        /// <param name="product">Det product der skal lægge i kurven</param>
+        /// <param name="quantity">Antallet af produkter</param>
+      
+        public void AddProduct(Product product, int quantity)
+        {
+            //Nu skal vi finde ud af, om det allerede eksisterer
+            if (Products.Any(x => x.Product.ProductID == product.ProductID))
+            {
+                //Her er produktet allerede lagt i kurven, så antallet skal bare tælles een op
+
+                BasketProductDecorator bpd = Products.Find(x => x.Product.ProductID == product.ProductID);
+                if (bpd != null)
+                {
+                    bpd.Quantity += quantity;
+
+                }
+
+            }
+            else
+            {
+                //Tilføjes til kurven
+                Products.Add(new BasketProductDecorator(product, quantity));
+            }
+
+
+            Debug.WriteLine(this.ToString());
 
         }
 
 
-        public string ToString() {
+        public string ToString()
+        {
             StringBuilder sb = new StringBuilder();
 
             foreach (var item in Products)
@@ -33,10 +72,8 @@ namespace ImaginaryShop.Model
                 sb.Append(item.Product.ProductName);
             }
 
-
-
             return "Qnt: " + GetQuantity() + ", " + "Total:" + GetTotal();
-        
+
         }
     }
 }

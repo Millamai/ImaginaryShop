@@ -18,61 +18,55 @@
                         <div class="card-body p-4">
                             <div class="text-center">@item.ProductName
                                 <!-- Product name-->
-                                <h5 class="fw-bolder"></h5>
+                                <div class="d-flex justify-content-between p-3 ">
+                                <h3 class="fw-bolder"> @item.Price @item.Currency</h3>
                                 <!-- Product price-->
-                                @item.Price @item.Currency
+                                <div class="flex-right">
+                                        <button class="cart-button" data-product-id="@item.ProductID">
+                                        <i class="fas fa-shopping-cart"></i> <!-- Indkøbskurv ikon -->
+                                    </button>
+                               </div>
+                               </div>
                             </div>
-                        </div>
-                        <!-- Product actions-->
-                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                            <div class="text-center"><a class="btn btn-outline-dark mt-auto add-to-cart" data-product-id="@item.ProductID" href="#">Køb</a></div>
-
-
-
-                            <button type="submit">KØB</button>
-                            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Se mere</a></div>
                         </div>
                     </div>
                 </div>
                
-            }
-            
-         
+            }           
            
         </div>
     </div>
+    
     <script>
-        $(document).ready(function () {
-            $('.add-to-cart').click(function (event) {
-                event.preventDefault();
-                var productId = $(this).data('product-id'); // Hent produkt-id fra knappens data-attribut
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll('.cart-button').forEach(button => {
+                button.addEventListener('click', async function (event) {
+                    event.preventDefault();
 
-                $.ajax({
-                    type: "POST",
-                    beforeSend: function (xhr) {
-                        xhr.setRequestHeader("XSRF-TOKEN",
-                            $('input:hidden[name="__RequestVerificationToken"]').val());
-                    },
-                    url: '/ShoppingBasket?Handler=Add',
-                    data: { productId: productId },
-                    success: function (data) {
-                        $('#totalPrice').text(data.total);
-                      
+                    let productId = this.dataset.productId; // Hent produkt-id fra data-attribut
+
+                    // Hent CSRF-token (hvis nødvendigt)
+                    let csrfToken = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+                    try {
+                        let response = await fetch('/ShoppingBasket?Handler=QuickAdd', {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/x-www-form-urlencoded",
+                                "XSRF-TOKEN": csrfToken // Tilføj CSRF-token
+                            },
+                            body: new URLSearchParams({ productId: productId }) // Form-data format
+                        });
+
+                        if (!response.ok) throw new Error("Fejl ved forespørgsel");
+
+                        let data = await response.json(); // Konverter svar til JSON
+                        document.getElementById('total').textContent = data.total.toFixed(2); // Opdater total
+
+                    } catch (error) {
+                        console.error("Fejl:", error);
                     }
                 });
-                // $.ajax({
-                //     type: "POST",
-                //     url: '/ShoppingBasket?Handler=Add',
-                //     data: productId: productId,
-                //     beforeSend: function (xhr) {
-                //         xhr.setRequestHeader("XSRF-TOKEN",
-                //             $('input:hidden[name="__RequestVerificationToken"]').val());
-                //     },
-                //     contentType: "application/json; charset=utf-8",
-                //     dataType: "json"
-                // }).done(function (data) {
-                //     console.log(data.result);
-                // })
             });
         });
     </script>

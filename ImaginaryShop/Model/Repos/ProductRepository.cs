@@ -42,9 +42,9 @@ namespace ImaginaryShop.Model.Repos
              
 
                 SqlCommand command = new SqlCommand("GetProductInCurrency", connection);
-                command.Parameters.AddWithValue("@ProductID", productId);
+                command.Parameters.AddWithValue("@ProductId", productId);
                 command.Parameters.AddWithValue("@Currency", currency);
-
+                command.CommandType = CommandType.StoredProcedure;
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
                 if (reader.Read())

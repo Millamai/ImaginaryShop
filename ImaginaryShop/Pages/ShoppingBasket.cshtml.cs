@@ -7,17 +7,27 @@ using System.Text.Json;
 
 namespace ImaginaryShop.Pages
 {
-    public class ShoppingBasketModel : PageModel
+    public class ShoppingBasketModel : ShoppingPageModel
     {
-        public void OnGet()
+        public IActionResult OnGet()
         {
+
+            ShoppingBasket basket = GetShoppingBasket();
+
+
+            return new JsonResult(new
+            {
+                total = basket.GetTotal(),
+                itemCount = basket.GetQuantity()
+            });
+
         }
 
         public void OnPost()
         {
 
 
-            Debug.WriteLine("ID ");
+      
         }
 
 
@@ -25,64 +35,35 @@ namespace ImaginaryShop.Pages
         {
 
 
-            Debug.WriteLine("ID *** " + productId);
         }
 
-
-        public IActionResult OnPostAdd(int productId)
+        /**En vare føjes til indkøbskurven på en hurtig måde... her er der kun tale om et produkt*/
+        public IActionResult OnPostQuickAdd(int productId)
         {
+            //Henter brugerens indkøbskurv fra sessionen
 
-            //Henter brugerens inkdøbskurv fra sessionen
-            var basket = HttpContext.Session.GetString("Basket");
-            ShoppingBasket sb;
-            if (basket == null)
-            {
-                Debug.WriteLine("Basket er null");
+            ShoppingBasket basket = GetShoppingBasket();
 
-                //Kunden har endnu ikke lagt noget i kurven
-                //Så vi opretter en ny kurv
-                sb = new ShoppingBasket();
-            }
-            else
-            {
-                Debug.WriteLine("Basket er ikke null");
-
-                //Vi henter kurven fra sessionen
-                sb = JsonSerializer.Deserialize<ShoppingBasket>(basket);
-            }
-
-            //Tilføjer produktet til kurven
-            //Først skal vi finde ud af, om produktet allerede ligger i kurven
             ProductRepository r = new ProductRepository("Server=localhost;Database=ImaginaryShop;Integrated Security=True;;Encrypt=False");
+            // TODO: Tjek lagerbeholdning med mere
+            Product productToBeAdded = r.GetProductById(productId, Currency);
 
-            if (sb.Products.Any(x => x.Product.ProductID == productId))
+            if (productToBeAdded != null)
             {
-                //Her er der allerede et eksisterende produkt
-          
-                sb.Products.Find(x => x.Product.ProductID == productId).Quantity +=1;
-
-                Debug.WriteLine("1 op");
-
-            }
-            else
-            {
-
-        //        sb.Products.Add(new BasketProductDecorator(r.GetProductById(productId)));
-                Debug.WriteLine("Ny");
+                //Produktet findes i databasen
+                basket.AddProduct(productToBeAdded,1);
+                
 
             }
 
-
-            //Læg kurven tilbage på sessionen
-            HttpContext.Session.SetString("Basket", JsonSerializer.Serialize(sb));
-            Debug.WriteLine("Set");
-            Debug.WriteLine(sb.ToString());
+            //Så skal kurven gemmes
+            SaveBasket(basket);
 
             return new JsonResult(new
             {
-                total = sb.GetTotal(),
-                itemCount = sb.GetQuantity()
-            }) ;
+                total = basket.GetTotal(),
+                itemCount = basket.GetQuantity()
+            });
         }
     }
 }
