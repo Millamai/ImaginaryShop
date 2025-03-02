@@ -16,9 +16,9 @@ namespace ImaginaryShop.Controllers
                 CookieOptions options = new CookieOptions
                 {
                     Expires = DateTime.UtcNow.AddDays(30),
-                    HttpOnly = true, // Beskytter mod XSS
-                    Secure = true,   // Kun via HTTPS
-                    SameSite = SameSiteMode.Lax
+                    HttpOnly = true, // Beskytter mod XSS ASVS 
+                    Secure = true,   // Kun via HTTPS ASVS 
+                    SameSite = SameSiteMode.Strict
                 };
 
                 Response.Cookies.Append("currency", currency, options);

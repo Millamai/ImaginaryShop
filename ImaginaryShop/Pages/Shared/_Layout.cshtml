@@ -50,8 +50,11 @@
                     </ul>
                 </nav>
             </div> *@
+
+           
+
             <div class="col-lg-12 col-md-12">
-                <div class="flex-right">
+                <div class="flex-right" >
                    @*  <a href="#" class="search-switch"><img src="imgs/search.png" alt=""></a>
 
                     <a asp-page="/CreateAccount">aaaa
@@ -62,6 +65,28 @@
                     </a> *@
 
                     
+
+                    <!-- Login formular -->
+                    <div class="login-container" >
+                        <!-- Knap til at åbne formularen -->
+                        <button id="toggleButton"><i class="fa-solid fa-user"></i></button>
+
+                        <!-- Login formular -->
+                        <div id="loginForm">
+                            <h3>Login</h3>
+                            <form>
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">Brugernavn</label>
+                                    <input type="text" class="form-control" id="username" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Adgangskode</label>
+                                    <input type="password" class="form-control" id="password" required>
+                                </div>
+                                <button type="submit" class="cart-button"><i class="fa-solid fa-right-to-bracket"></i></button>
+                            </form>
+                        </div>
+                    </div>
                     <div class="dropdown">
                         
                         <button class="btn btn-secondary dropdown-toggle currencyBtn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -128,7 +153,22 @@
         </nav> *@
     </header>
    
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  
+
     <script>
+
+        const toggleButton = document.getElementById('toggleButton');
+        const loginForm = document.getElementById('loginForm');
+
+        toggleButton.addEventListener('click', function () {
+            // Toggle login formens synlighed med en animation
+            loginForm.classList.toggle('show');
+        });
+
+       
+
         async function fetchData() {
             try {
                 let response = await fetch("/ShoppingBasket");
@@ -151,11 +191,11 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+ @*    <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2024 - ImaginaryShop - <a asp-area="" asp-page="/Privacy">Privacy</a>
         </div>
-    </footer>
+    </footer> *@
 
    
     <script src="~/js/site.js" asp-append-version="true"></script>

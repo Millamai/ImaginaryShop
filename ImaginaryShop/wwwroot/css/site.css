@@ -18,9 +18,15 @@ html {
 }
 
 body {
-    margin-bottom: 60px;
+   
 }
 
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%; /* Sørg for, at body ikke går ud over skærmen */
+    overflow-x: hidden; /* Skjul horisontal scrollbar, hvis der er noget, der går ud over */
+}
 
 /**Justerer alle elementer mod hæjre**/
 .flex-right {
@@ -38,12 +44,12 @@ body {
 
 
 
-/* Style for den runde knap */
+/* Style for den runde knap med indkøbskurven*/
 .cart-button {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background-color: #cccccc; /* Orange farve */
+    background-color: #cccccc;
     border: none;
     color: white;
     font-size: 24px;
@@ -69,6 +75,63 @@ body {
 }
 
 
+/* Styling for containeren som holder knappen og formularen */
+.login-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: burlywood;
+}
+
+/* Knappen, der åbner login-formen */
+#toggleButton {
+    /* background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;*/
+    background-color: #ffffff;
+    border: none;
+    position: relative; /* Brug relativ positionering for at placere formularen korrekt */
+
+    color: black;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    z-index: 1060; /* Sørg for, at knappen er over formularen */
+}
+
+    #toggleButton:hover {
+        color: rgba(0, 0, 0, 0.2);
+    }
+
+/* Styling for login-formen */
+#loginForm {
+    position: absolute; /* Positionér formularen absolut i forhold til containeren */
+    top: 100%; /* Placer formularen lige under knappen */
+    transform: translateX(-70%); /* Centrer formularen horisontalt */
+    display: none; /* Start med at skjule formularen */
+    width: 300px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    z-index: 1060; /* Sørg for, at knappen er over formularen */
+}
+
+    /* Når formularen skal vises */
+    #loginForm.show {
+        display: block;
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+    }
 /*
 
 .header {
