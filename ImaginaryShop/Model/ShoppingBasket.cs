@@ -9,10 +9,10 @@ namespace ImaginaryShop.Model
         // TODO: Implementer når brugeren ændrer currency
 
         public List<BasketProductDecorator> Products { get; set; } = new();
-       
+
         public ShoppingBasket()
         {
-            
+
         }
 
         public double GetTotal()
@@ -35,9 +35,13 @@ namespace ImaginaryShop.Model
         /// </summary>
         /// <param name="product">Det product der skal lægge i kurven</param>
         /// <param name="quantity">Antallet af produkter</param>
-      
+
         public void AddProduct(Product product, int quantity)
         {
+
+            //Quantity skal altid være et positivt tal
+            if (quantity < 1)
+                quantity = 1;
             //Nu skal vi finde ud af, om det allerede eksisterer
             if (Products.Any(x => x.Product.ProductID == product.ProductID))
             {
@@ -56,10 +60,6 @@ namespace ImaginaryShop.Model
                 //Tilføjes til kurven
                 Products.Add(new BasketProductDecorator(product, quantity));
             }
-
-
-            Debug.WriteLine(this.ToString());
-
         }
 
 

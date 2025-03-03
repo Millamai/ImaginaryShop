@@ -31,7 +31,7 @@ public class UserRepository
                 command.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
                 command.Parameters.AddWithValue("@FullName", user.FullName);
                 command.Parameters.AddWithValue("@Role", user.Role);
-                command.Parameters.AddWithValue("@CreatedAt", user.CreatedAt);
+                command.Parameters.AddWithValue("@CreatedAt",DateTime.Now);
 
                 // Execute and get the inserted UserId
                 user.UserId = (int)command.ExecuteScalar();
@@ -50,6 +50,26 @@ public class UserRepository
             using (var command = new SqlCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@Email", email);
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        return MapUser(reader);
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    public User GetUserByUserName(string uname)
+    {
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            const string query = "SELECT * FROM Users WHERE UserName = @UserName";
+            connection.Open();
+            using (var command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@UserName", uname);
                 using (var reader = command.ExecuteReader())
                 {
                     if (reader.Read())

@@ -1,5 +1,8 @@
+using ImaginaryShop.Model;
 using ImaginaryShop.Model.Repos;
 using ImaginaryShop.Model.Services;
+using Isopoh.Cryptography.Argon2;
+
 
 namespace ImaginaryShop
 {
@@ -13,7 +16,7 @@ namespace ImaginaryShop
             builder.Services.AddRazorPages();
             builder.Services.AddScoped<CategoryRepository>();
             builder.Services.AddScoped<CategoryService>();
-       
+
             builder.Services.AddDistributedMemoryCache(); // Bruger hukommelsen til at lagre sessiondata
             builder.Services.AddSession(options =>
             {
@@ -30,7 +33,7 @@ namespace ImaginaryShop
 
 
             // Registrer IHttpContextAccessor
-        
+
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -41,7 +44,7 @@ namespace ImaginaryShop
 
             }
 
-          
+
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
@@ -53,7 +56,28 @@ namespace ImaginaryShop
             app.MapRazorPages();
             app.MapControllers();
 
+         //      Seed();
             app.Run();
+        }
+
+
+        private static void Seed()
+        {
+            User u = new User();
+            u.UserName = "Test2";
+            u.FullName = "Camilla";
+            u.Email = "Test2";
+            u.Role = "Customer";
+
+            string pass = "123";
+          string hashedpassword = Argon2.Hash(pass);
+            u.PasswordHash = hashedpassword;
+
+            UserRepository ur = new UserRepository("Server=localhost;Database=ImaginaryShop;Integrated Security=True;;Encrypt=False");
+            ur.CreateUser(u);
+
+
+
         }
     }
 }
