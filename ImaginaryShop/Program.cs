@@ -90,7 +90,7 @@ namespace ImaginaryShop
             app.MapRazorPages();
             app.MapControllers();
 
-            //      Seed();
+         //   Seed();
             app.Run();
         }
 
@@ -98,10 +98,10 @@ namespace ImaginaryShop
         private static void Seed()
         {
             User u = new User();
-            u.UserName = "Test2";
+            u.UserName = "Milla";
             u.FullName = "Camilla";
             u.Email = "Test2";
-            u.Role = "Customer";
+            u.Role = User.UserRole.Customer;
 
             string pass = "123";
             string hashedpassword = Argon2.Hash(pass);

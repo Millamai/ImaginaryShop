@@ -67,7 +67,15 @@
                                 </form>
                             </div>
                         }
-
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <div id="logOutForm">
+                                <h3>Log ud</h3>
+                                <form id="logoutformelement">
+                                    <button type="submit" class="cart-button"><i class="fa fa-sign-out"></i></button>
+                                </form>
+                            </div>
+                        }
                     </div>
 
                     <div class="dropdown">
@@ -104,13 +112,44 @@
 
         const toggleButton = document.getElementById('toggleButton');
         const loginForm = document.getElementById('loginForm');
+        const logOutForm = document.getElementById('logOutForm');
 
         toggleButton.addEventListener('click', function () {
             // Toggle login formens synlighed med en animation
             if (document.getElementById('loginForm') != null)
                 loginForm.classList.toggle('show');
+
+            
+            if (document.getElementById('logOutForm') != null) {
+
+                logOutForm.classList.toggle('show');
+            }
+               
         });
 
+        if (document.getElementById("logOutForm") != null) {
+            document.getElementById("logOutForm").addEventListener("submit", async function (event) {
+                event.preventDefault(); // Forhindrer formularen i at blive sendt på normal måde
+
+
+                // Send asynkront loginkald
+                const response = await fetch("/Login/logout", {
+                    method: "POST", // Brug POST-metoden
+                    headers: {
+                        "Content-Type": "application/json", // Angiv at vi sender JSON
+                    }
+                });
+
+                const result = await response.json();
+                if (result.redirectUrl) {
+                    // Hvis vi får en redirect URL, omdiriger brugeren
+                    window.location.href = result.redirectUrl; // Manuelt redirect
+
+                }
+            });
+
+        }
+     
 
         if (document.getElementById("loginformelement") != null) {
             document.getElementById("loginformelement").addEventListener("submit", async function (event) {

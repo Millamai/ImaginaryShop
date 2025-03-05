@@ -38,7 +38,6 @@ namespace ImaginaryShop.Model
 
         public void AddProduct(Product product, int quantity)
         {
-
             //Quantity skal altid være et positivt tal
             if (quantity < 1)
                 quantity = 1;

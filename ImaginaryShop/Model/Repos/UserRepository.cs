@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using Microsoft.Data.SqlClient;
+using System.Net.NetworkInformation;
+using static ImaginaryShop.Model.User;
 
 public class UserRepository
 {
@@ -177,7 +179,10 @@ public class UserRepository
             Email = reader["Email"].ToString(),
             PasswordHash = reader["PasswordHash"].ToString(),
             FullName = reader["FullName"].ToString(),
-            Role = reader["Role"].ToString(),
+            Role = (UserRole)Enum.ToObject(typeof(UserRole), Convert.ToInt32(reader["Role"])),
+
+
+
             CreatedAt = Convert.ToDateTime(reader["CreatedAt"]),
             LastLogin = reader["LastLogin"] as DateTime?
         };

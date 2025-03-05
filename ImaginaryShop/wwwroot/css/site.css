@@ -134,6 +134,28 @@ html, body {
         opacity: 1;
         transform: translateX(-50%) scale(1);
     }
+
+#logOutForm {
+    position: absolute; /* Positionér formularen absolut i forhold til containeren */
+    top: 100%; /* Placer formularen lige under knappen */
+    transform: translateX(-70%); /* Centrer formularen horisontalt */
+    display: none; /* Start med at skjule formularen */
+    width: 300px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    z-index: 1060; /* Sørg for, at knappen er over formularen */
+}
+
+    /* Når formularen skal vises */
+    #logOutForm.show {
+        display: block;
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+    }
 /*
 
 .header {
