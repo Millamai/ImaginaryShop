@@ -26,44 +26,60 @@ namespace ImaginaryShop.Controllers
             _userRepository = userRepository;
         }
 
-
+        /// <summary>
+        /// Håndterer loginanmodninger og validerer brugerens legitimationsoplysninger.
+        /// </summary>
+        /// <param name="loginModel">Modellen, der indeholder brugerens loginoplysninger.</param>
+        /// <returns>
+        /// Returnerer en HTTP-statuskode afhængigt af loginprocessen:
+        /// - 200 OK med en redirect-URL, hvis login er succesfuldt.
+        /// - 400 Bad Request, hvis input ikke er validt.
+        /// - 401 Unauthorized, hvis brugernavn eller adgangskode er forkert.
+        /// </returns>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
-            //Validerer først inputtet om det overholder reglerne
+            // Validerer først inputtet for at sikre, at det overholder modelvalideringsreglerne
             if (!ModelState.IsValid)
-            {              
-                string error = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).FirstOrDefault();
+            {
+                // Henter den første fejlbesked fra modelstate
+                string error = ModelState.Values.SelectMany(v => v.Errors)
+                                                .Select(e => e.ErrorMessage)
+                                                .FirstOrDefault();
                 return BadRequest(new { message = error });
             }
 
-           
+            // Henter brugeren fra databasen baseret på det indtastede brugernavn
             User u = _userRepository.GetUserByUserName(loginModel.Username);
 
+            // Tjekker om brugeren eksisterer og verificerer adgangskoden ved hjælp af Argon2
             if ((u != null) && (Argon2.Verify(u.PasswordHash, loginModel.Password)))
             {
-                //  Når brugeren logger ind med det rigtige brugernavn og password,
-                //  opretter vi en simpel cookie ved at bruge SignInAsync og gemmer
-                //  brugerens oplysninger(f.eks.brugernavn) i claims.
-                List<Claim> claims = new List<Claim>();
-                claims.Add(new Claim(ClaimTypes.Name, u.FullName));
-                //selv designet claim
-                claims.Add(new Claim("Username", u.UserName));
+                // Opretter en liste af claims (påstande) om brugeren
+                List<Claim> claims = new List<Claim>
+        {
+            // Standard claim, der gemmer brugerens fulde navn
+            new Claim(ClaimTypes.Name, u.FullName),
+            
+            // Brugerdefineret claim, der gemmer brugernavn
+            new Claim("Username", u.UserName)
+        };
+
+                // Opretter en ny identitet og principal baseret på claims
                 var identity = new ClaimsIdentity(claims, "login");
                 var principal = new ClaimsPrincipal(identity);
 
-                // Sæt cookie for den autentificerede bruger
+                // Autentificerer brugeren ved at oprette en cookie
                 await HttpContext.SignInAsync(principal);
 
-                //Redirect til der hvor brugeren kommer fra
+                // Returnerer en redirect-URL til den side, brugeren kom fra
                 return Ok(new { redirectUrl = Request.Headers["Referer"].ToString() });
             }
             else
+            {
+                // Returnerer en 401 Unauthorized, hvis loginoplysningerne er forkerte
                 return Unauthorized(new { message = "Der findes ikke en bruger med dette brugernavn eller password" });
-
-
-
-
+            }
         }
 
 
