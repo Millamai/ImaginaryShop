@@ -126,29 +126,32 @@
             }
                
         });
+        console.log(document.getElementById("logOutForm"));
+        document.addEventListener("DOMContentLoaded", function () {
+            if (document.getElementById("logOutForm") != null) {
+                document.getElementById("logOutForm").addEventListener("click", async function (event) {
+                    event.preventDefault(); // Forhindrer formularen i at blive sendt på normal måde
 
-        if (document.getElementById("logOutForm") != null) {
-            document.getElementById("logOutForm").addEventListener("submit", async function (event) {
-                event.preventDefault(); // Forhindrer formularen i at blive sendt på normal måde
+                    console.log("test");
+                    // Send asynkront loginkald
+                    const response = await fetch("/Login/logout", {
+                        method: "POST", // Brug POST-metoden
+                        headers: {
+                            "Content-Type": "application/json", // Angiv at vi sender JSON
+                        }
+                    });
 
+                    const result = await response.json();
+                    console.log(result)
+                    if (result.redirectUrl) {
+                        // Hvis vi får en redirect URL, omdiriger brugeren
+                        window.location.href = result.redirectUrl; // Manuelt redirect
 
-                // Send asynkront loginkald
-                const response = await fetch("/Login/logout", {
-                    method: "POST", // Brug POST-metoden
-                    headers: {
-                        "Content-Type": "application/json", // Angiv at vi sender JSON
                     }
                 });
 
-                const result = await response.json();
-                if (result.redirectUrl) {
-                    // Hvis vi får en redirect URL, omdiriger brugeren
-                    window.location.href = result.redirectUrl; // Manuelt redirect
-
-                }
-            });
-
-        }
+            }
+        });
      
 
         if (document.getElementById("loginformelement") != null) {

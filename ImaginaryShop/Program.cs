@@ -92,7 +92,7 @@ namespace ImaginaryShop
             app.MapRazorPages();
             app.MapControllers();
 
-            Seed(app.Services);
+         //   Seed(app.Services);
             app.Run();
         }
 

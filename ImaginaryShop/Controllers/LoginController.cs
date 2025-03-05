@@ -11,7 +11,7 @@ using System.Security.Claims;
 namespace ImaginaryShop.Controllers
 {
 
-   
+
     /// <summary>
     /// Controller, der håndterer login- og logout-funktionalitet for brugere.
     /// </summary>
@@ -61,6 +61,14 @@ namespace ImaginaryShop.Controllers
             // Tjekker om brugeren eksisterer og verificerer adgangskoden ved hjælp af Argon2
             if ((u != null) && (Argon2.Verify(u.PasswordHash, loginModel.Password)))
             {
+
+                //Smider den gamle session ud!
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                HttpContext.Session.Clear(); // Tømmer sessionen
+                HttpContext.Session.SetString("SessionReset", "true"); // Markerer, at sessionen er nulstillet
+
+
+
                 // Opretter en liste af claims (påstande) om brugeren
                 List<Claim> claims = new List<Claim>
         {
