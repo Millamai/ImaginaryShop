@@ -11,15 +11,21 @@ using System.Security.Claims;
 namespace ImaginaryShop.Controllers
 {
 
-    //Controller for handling login functionality
-
-
+   
+    /// <summary>
+    /// Controller, der håndterer login- og logout-funktionalitet for brugere.
+    /// </summary>
     [Route("Login")]
     public class LoginController : Controller
     {
         private readonly IUserRepository _userRepository;
         private readonly IConfiguration _configuration;
 
+        /// <summary>
+        /// Initialiserer en ny instans af <see cref="LoginController"/> med de nødvendige afhængigheder.
+        /// </summary>
+        /// <param name="configuration">Applikationens konfigurationsinstillinger.</param>
+        /// <param name="userRepository">Repository til håndtering af brugerdata.</param>
         public LoginController(IConfiguration configuration, IUserRepository userRepository)
         {
             _configuration = configuration;
