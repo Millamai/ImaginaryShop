@@ -182,8 +182,8 @@
 
                 } else {
                     // Hvis login fejler, vis en fejlbesked
-
-                    document.getElementById("loginMessage").textContent = "Ukendt brugernavn eller password, prøv igen!";
+                   //
+                    document.getElementById("loginMessage").textContent = result.message;
                 }
             });
         }

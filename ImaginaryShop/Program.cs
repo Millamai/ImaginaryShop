@@ -18,7 +18,7 @@ namespace ImaginaryShop
             builder.Services.AddRazorPages();
             builder.Services.AddScoped<CategoryRepository>();
             builder.Services.AddScoped<CategoryService>();
-
+            
             builder.Services.AddDistributedMemoryCache(); // Bruger hukommelsen til at lagre sessiondata
 
 
@@ -90,7 +90,7 @@ namespace ImaginaryShop
             app.MapRazorPages();
             app.MapControllers();
 
-         //   Seed();
+        //    Seed();
             app.Run();
         }
 
@@ -98,10 +98,10 @@ namespace ImaginaryShop
         private static void Seed()
         {
             User u = new User();
-            u.UserName = "Milla";
-            u.FullName = "Camilla";
-            u.Email = "Test2";
-            u.Role = User.UserRole.Customer;
+            u.UserName = "master";
+            u.FullName = "The master";
+            u.Email = "Test23";
+            u.Role = User.UserRole.Admin;
 
             string pass = "123";
             string hashedpassword = Argon2.Hash(pass);
@@ -109,6 +109,8 @@ namespace ImaginaryShop
 
             UserRepository ur = new UserRepository("Server=localhost;Database=ImaginaryShop;Integrated Security=True;;Encrypt=False");
             ur.CreateUser(u);
+
+
 
 
 

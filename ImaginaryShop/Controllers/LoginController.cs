@@ -26,11 +26,14 @@ namespace ImaginaryShop.Controllers
 
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginModel loginModel)
+        public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
-            // TODO: Input validering 
-            //Find brugeren i databasen
-            //TODO : Change conn string
+            //Validerer først inputtet om det overholder reglerne
+            if (!ModelState.IsValid)
+            {              
+                string error = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).FirstOrDefault();
+                return BadRequest(new { message = error });
+            }
 
             UserRepository ur = new UserRepository("Server=localhost;Database=ImaginaryShop;Integrated Security=True;;Encrypt=False");
             User u = ur.GetUserByUserName(loginModel.Username);
@@ -42,18 +45,19 @@ namespace ImaginaryShop.Controllers
                 //  brugerens oplysninger(f.eks.brugernavn) i claims.
                 List<Claim> claims = new List<Claim>();
                 claims.Add(new Claim(ClaimTypes.Name, u.FullName));
+                //selv designet claim
                 claims.Add(new Claim("Username", u.UserName));
                 var identity = new ClaimsIdentity(claims, "login");
                 var principal = new ClaimsPrincipal(identity);
 
                 // Sæt cookie for den autentificerede bruger
-                HttpContext.SignInAsync(principal);
+                await HttpContext.SignInAsync(principal);
 
                 //Redirect til der hvor brugeren kommer fra
                 return Ok(new { redirectUrl = Request.Headers["Referer"].ToString() });
             }
             else
-                return Unauthorized(new { message = "Invalid username or password" });
+                return Unauthorized(new { message = "Der findes ikke en bruger med dette brugernavn eller password" });
 
 
 
