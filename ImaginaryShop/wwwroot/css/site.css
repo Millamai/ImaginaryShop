@@ -41,7 +41,9 @@ html, body {
     color: #000;
 }
 
-
+.message {
+    color: maroon;
+}
 
 
 /* Style for den runde knap med indkøbskurven*/

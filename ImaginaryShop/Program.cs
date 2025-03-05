@@ -2,6 +2,8 @@ using ImaginaryShop.Model;
 using ImaginaryShop.Model.Repos;
 using ImaginaryShop.Model.Services;
 using Isopoh.Cryptography.Argon2;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.CookiePolicy;
 
 
 namespace ImaginaryShop
@@ -18,6 +20,20 @@ namespace ImaginaryShop
             builder.Services.AddScoped<CategoryService>();
 
             builder.Services.AddDistributedMemoryCache(); // Bruger hukommelsen til at lagre sessiondata
+
+
+            builder.Services.Configure<CookiePolicyOptions>(options =>
+            {
+                // Gør cookien HttpOnly, så den kun kan tilgås af serveren (beskytter mod XSS-angreb)
+                options.HttpOnly = HttpOnlyPolicy.Always;
+
+                // Kun send cookies via sikre forbindelser (HTTPS)
+                options.Secure = CookieSecurePolicy.Always;
+
+                // SameSite politik (beskytter mod CSRF)
+                options.MinimumSameSitePolicy = SameSiteMode.Strict;  // Brug Lax for at tillade nogle cross-origin anmodninger
+            });
+
             builder.Services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(30); // Timeout for session
@@ -27,6 +43,21 @@ namespace ImaginaryShop
             builder.Services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
             //Så cookies kan tilgås i cshtml
             builder.Services.AddHttpContextAccessor();
+
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+      .AddCookie(options =>
+      {
+
+          options.Cookie.Name = "AuthCookie";  // Angiv navnet på autentificeringscookien
+          options.Cookie.SecurePolicy = CookieSecurePolicy.Always;  // Kun HTTPS
+          options.Cookie.SameSite = SameSiteMode.Lax;  // SameSite politik for autentificeringscookies
+          options.Cookie.Expiration = null;  // Ingen udløbsdato
+          options.Cookie.MaxAge = null;   // Ingen max alder
+          options.Cookie.IsEssential = true; // Cookien er nødvendig for applikationen
+      });
+
+
+
 
             var app = builder.Build();
             app.UseSession();  // Dette skal være før app.UseEndpoints()
@@ -50,13 +81,16 @@ namespace ImaginaryShop
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseCookiePolicy();
 
+            // Tilføj autentificering og autorisation
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapRazorPages();
             app.MapControllers();
 
-         //      Seed();
+            //      Seed();
             app.Run();
         }
 
@@ -70,7 +104,7 @@ namespace ImaginaryShop
             u.Role = "Customer";
 
             string pass = "123";
-          string hashedpassword = Argon2.Hash(pass);
+            string hashedpassword = Argon2.Hash(pass);
             u.PasswordHash = hashedpassword;
 
             UserRepository ur = new UserRepository("Server=localhost;Database=ImaginaryShop;Integrated Security=True;;Encrypt=False");

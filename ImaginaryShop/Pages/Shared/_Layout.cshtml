@@ -1,4 +1,5 @@
 ﻿@using ImaginaryShop.Model.Services
+@using System.Security.Claims
 @inject CategoryService CategoryService
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
@@ -26,69 +27,49 @@
 
         <div class="row" style="padding:10px">
             <div class="col-lg-3 col-md-3">
-                @*   <div class="header__logo">
-                <a href="./index.html"><img src="img/logo.png" alt=""></a>
-                </div> *@
             </div>
-            @*  <div class="col-lg-6 col-md-6">
-            <nav class="header__menu mobile-menu">
-            <ul>
-            <li><a href="./index.html">Home</a></li>
-            <li class="active"><a href="./shop.html">Shop</a></li>
-            <li>
-            <a href="#">Pages</a>
-            <ul class="dropdown">
-            <li><a href="./about.html">About Us</a></li>
-            <li><a href="./shop-details.html">Shop Details</a></li>
-            <li><a href="./shopping-cart.html">Shopping Cart</a></li>
-            <li><a href="./checkout.html">Check Out</a></li>
-            <li><a href="./blog-details.html">Blog Details</a></li>
-            </ul>
-            </li>
-            <li><a href="./blog.html">Blog</a></li>
-            <li><a href="./contact.html">Contacts</a></li>
-            </ul>
-            </nav>
-            </div> *@
+
 
 
 
             <div class="col-lg-12 col-md-12">
                 <div class="flex-right">
-                    @*  <a href="#" class="search-switch"><img src="imgs/search.png" alt=""></a>
-
-                    <a asp-page="/CreateAccount">aaaa
-
-                    <span class="material-symbols-outlined">
-                    person
-                    </span>
-                    </a> *@
-
 
 
                     <!-- Login formular -->
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <div>@User.Claims.FirstOrDefault(c => c.Type == "Username")?.Value</div>
+                    }
+
                     <div class="login-container">
                         <!-- Knap til at åbne formularen -->
                         <button id="toggleButton"><i class="fa-solid fa-user"></i></button>
 
-                        <!-- Login formular -->
-                        <div id="loginForm">
-                            <h3>Login</h3>
-                            <form id="loginformelement">
+                        @if (!User.Identity.IsAuthenticated)
+                        {
 
-                                <span id="loginMessage" style="color:maroon"></span>
-                                <div class="mb-3">
-                                    <label for="username" class="form-label">Brugernavn</label>
-                                    <input type="text" class="form-control" id="username" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="password" class="form-label">Adgangskode</label>
-                                    <input type="password" class="form-control" id="password" required>
-                                </div>
-                                <button type="submit" class="cart-button"><i class="fa-solid fa-right-to-bracket"></i></button>
-                            </form>
-                        </div>
+                            <!-- Login formular -->
+                            <div id="loginForm">
+                                <h3>Login</h3>
+                                <form id="loginformelement">
+
+                                    <span id="loginMessage" class="message"></span>
+                                    <div class="mb-3">
+                                        <label for="username" class="form-label">Brugernavn</label>
+                                        <input type="text" class="form-control" id="username" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label">Adgangskode</label>
+                                        <input type="password" class="form-control" id="password" required>
+                                    </div>
+                                    <button type="submit" class="cart-button"><i class="fa-solid fa-right-to-bracket"></i></button>
+                                </form>
+                            </div>
+                        }
+
                     </div>
+
                     <div class="dropdown">
 
                         <button class="btn btn-secondary dropdown-toggle currencyBtn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -112,7 +93,7 @@
 
             </div>
         </div>
-      
+
     </header>
 
 
@@ -126,53 +107,47 @@
 
         toggleButton.addEventListener('click', function () {
             // Toggle login formens synlighed med en animation
-            loginForm.classList.toggle('show');
+            if (document.getElementById('loginForm') != null)
+                loginForm.classList.toggle('show');
         });
 
 
+        if (document.getElementById("loginformelement") != null) {
+            document.getElementById("loginformelement").addEventListener("submit", async function (event) {
+                event.preventDefault(); // Forhindrer formularen i at blive sendt på normal måde
 
-        document.getElementById("loginformelement").addEventListener("submit", async function (event) {
-            event.preventDefault(); // Forhindrer formularen i at blive sendt på normal måde
+                // Hent brugerens input
+                const username = document.getElementById("username").value;
+                const password = document.getElementById("password").value;
 
-            // Hent brugerens input
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
+                // Send asynkront loginkald
+                const response = await fetch("/Login/login", {
+                    method: "POST", // Brug POST-metoden
+                    headers: {
+                        "Content-Type": "application/json", // Angiv at vi sender JSON
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password,
+                    }),
+                });
+                const result = await response.json();
+                // Håndtering af serverens svar
+                if (response.ok) {
+                    loginForm.classList.toggle('hide');
+                    if (result.redirectUrl) {
+                        // Hvis vi får en redirect URL, omdiriger brugeren
+                        window.location.href = result.redirectUrl; // Manuelt redirect
 
-            // Send asynkront loginkald
-            const response = await fetch("/Login/login", {
-                method: "POST", // Brug POST-metoden
-                headers: {
-                    "Content-Type": "application/json", // Angiv at vi sender JSON
-                },
-                body: JSON.stringify({
-                    username: username,
-                    password: password,
-                }),
-            });
-            const result = await response.json();
-            // Håndtering af serverens svar
-            if (response.ok) {
-                
-                console.log(result);
-                loginForm.classList.toggle('hide');
+                    }
 
-                console.log(result.redirectUrl);
-                if (result.redirectUrl) {
-                    // Hvis vi får en redirect URL, omdiriger brugeren
-                    window.location.href = result.redirectUrl; // Manuelt redirect
+                } else {
+                    // Hvis login fejler, vis en fejlbesked
 
+                    document.getElementById("loginMessage").textContent = "Ukendt brugernavn eller password, prøv igen!";
                 }
-
-            } else {
-                // Hvis login fejler, vis en fejlbesked
-
-           
-                document.getElementById("loginMessage").textContent = "Ukendt brugernavn eller password, prøv igen!";
-               
-                
-            }
-        });
-
+            });
+        }
 
         async function fetchData() {
             try {
@@ -195,6 +170,13 @@
             @RenderBody()
         </main>
     </div>
+
+    @*    <footer class="border-top footer text-muted">
+    <div class="container">
+    &copy; 2024 - ImaginaryShop - <a asp-area="" asp-page="/Privacy">Privacy</a>
+    </div>
+    </footer> *@
+
 
     <script src="~/js/site.js" asp-append-version="true"></script>
 

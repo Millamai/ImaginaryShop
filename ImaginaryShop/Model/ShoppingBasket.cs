@@ -53,7 +53,6 @@ namespace ImaginaryShop.Model
                     bpd.Quantity += quantity;
 
                 }
-
             }
             else
             {
