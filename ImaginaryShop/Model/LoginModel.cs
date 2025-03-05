@@ -15,7 +15,7 @@ namespace ImaginaryShop.Model
         /// - Feltet er obligatorisk.
         /// </remarks>
         [Required(ErrorMessage = "Brugernavn er påkrævet")]
-        [StringLength(50, MinimumLength =8, ErrorMessage = "Brugernavn skal være mellem 8 og 50 tegn")]
+        [StringLength(50, MinimumLength =6, ErrorMessage = "Brugernavn skal være mellem 6 og 50 tegn")]
         [RegularExpression(@"^[^<>&%]+$", ErrorMessage = "Brugernavn må ikke indeholde <, >, & eller %")]
         public string Username { get; set; }
 

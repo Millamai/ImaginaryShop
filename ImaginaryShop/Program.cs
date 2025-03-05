@@ -18,10 +18,11 @@ namespace ImaginaryShop
             builder.Services.AddRazorPages();
             builder.Services.AddScoped<CategoryRepository>();
             builder.Services.AddScoped<CategoryService>();
-            
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+
+
             builder.Services.AddDistributedMemoryCache(); // Bruger hukommelsen til at lagre sessiondata
-
-
             builder.Services.Configure<CookiePolicyOptions>(options =>
             {
                 // Gør cookien HttpOnly, så den kun kan tilgås af serveren (beskytter mod XSS-angreb)
@@ -41,6 +42,7 @@ namespace ImaginaryShop
             });
 
             builder.Services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
+        
             //Så cookies kan tilgås i cshtml
             builder.Services.AddHttpContextAccessor();
 
@@ -90,24 +92,24 @@ namespace ImaginaryShop
             app.MapRazorPages();
             app.MapControllers();
 
-        //    Seed();
+            Seed(app.Services);
             app.Run();
         }
 
 
-        private static void Seed()
+        private static void Seed(IServiceProvider serviceProvider)
         {
             User u = new User();
-            u.UserName = "master";
-            u.FullName = "The master";
-            u.Email = "Test23";
+            u.UserName = "master2";
+            u.FullName = "The master2";
+            u.Email = "Test243";
             u.Role = User.UserRole.Admin;
 
-            string pass = "123";
+            string pass = "123456789012";
             string hashedpassword = Argon2.Hash(pass);
             u.PasswordHash = hashedpassword;
 
-            UserRepository ur = new UserRepository("Server=localhost;Database=ImaginaryShop;Integrated Security=True;;Encrypt=False");
+            UserRepository ur = new UserRepository(serviceProvider.GetRequiredService<IConfiguration>());
             ur.CreateUser(u);
 
 

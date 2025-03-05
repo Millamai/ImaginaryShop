@@ -5,14 +5,15 @@ using System.Data;
 using Microsoft.Data.SqlClient;
 using System.Net.NetworkInformation;
 using static ImaginaryShop.Model.User;
+using ImaginaryShop.Model.Repos;
 
-public class UserRepository
+public class UserRepository : IUserRepository
 {
     private readonly string _connectionString;
 
-    public UserRepository(string connectionString)
+    public UserRepository(IConfiguration configuration)
     {
-        _connectionString = connectionString;
+        _connectionString = configuration.GetConnectionString("DefaultConnection");
     }
 
     // Opret en ny bruger

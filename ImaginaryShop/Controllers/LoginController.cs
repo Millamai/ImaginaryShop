@@ -1,4 +1,5 @@
 ﻿using ImaginaryShop.Model;
+using ImaginaryShop.Model.Repos;
 using Isopoh.Cryptography.Argon2;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -16,12 +17,13 @@ namespace ImaginaryShop.Controllers
     [Route("Login")]
     public class LoginController : Controller
     {
-
+        private readonly IUserRepository _userRepository;
         private readonly IConfiguration _configuration;
 
-        public LoginController(IConfiguration configuration)
+        public LoginController(IConfiguration configuration, IUserRepository userRepository)
         {
             _configuration = configuration;
+            _userRepository = userRepository;
         }
 
 
@@ -35,8 +37,8 @@ namespace ImaginaryShop.Controllers
                 return BadRequest(new { message = error });
             }
 
-            UserRepository ur = new UserRepository("Server=localhost;Database=ImaginaryShop;Integrated Security=True;;Encrypt=False");
-            User u = ur.GetUserByUserName(loginModel.Username);
+           
+            User u = _userRepository.GetUserByUserName(loginModel.Username);
 
             if ((u != null) && (Argon2.Verify(u.PasswordHash, loginModel.Password)))
             {
