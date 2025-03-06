@@ -69,6 +69,7 @@ namespace ImaginaryShop.Controllers
         {
             // Standard claim, der gemmer brugerens fulde navn
             new Claim(ClaimTypes.Name, u.FullName),
+            new Claim(ClaimTypes.Role, u.Role.ToString()),
             
             // Brugerdefineret claim, der gemmer brugernavn
             new Claim("Username", u.UserName)

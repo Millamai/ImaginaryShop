@@ -22,9 +22,17 @@
                                 <h3 class="fw-bolder"> @item.Price @item.Currency</h3>
                                 <!-- Product price-->
                                 <div class="flex-right">
-                                        <button class="cart-button" data-product-id="@item.ProductID">
-                                        <i class="fas fa-shopping-cart"></i> <!-- Indkøbskurv ikon -->
-                                    </button>
+
+
+                                       
+
+                                        @if (!User.IsInRole("Admin"))
+                                        {
+                                            //Admin må ikke lægge varer i en indkøbskurv
+                                            <button class="cart-button" data-product-id="@item.ProductID">
+                                                <i class="fas fa-shopping-cart"></i> <!-- Indkøbskurv ikon -->
+                                            </button>
+                                        }
                                </div>
                                </div>
                             </div>
