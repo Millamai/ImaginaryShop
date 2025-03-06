@@ -39,6 +39,8 @@ namespace ImaginaryShop
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(30); // Timeout for session
                 options.Cookie.HttpOnly = true; // Forhindrer adgang til sessionen fra JavaScript
+                options.Cookie.IsEssential = true; // Sørger for, at session virker uden cookie-consent
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Kræver HTTPS for session-cookies
             });
 
             builder.Services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");

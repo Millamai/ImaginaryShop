@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace ImaginaryShop.Controllers
 {
@@ -58,16 +59,10 @@ namespace ImaginaryShop.Controllers
             // Henter brugeren fra databasen baseret på det indtastede brugernavn
             User u = _userRepository.GetUserByUserName(loginModel.Username);
 
+
             // Tjekker om brugeren eksisterer og verificerer adgangskoden ved hjælp af Argon2
             if ((u != null) && (Argon2.Verify(u.PasswordHash, loginModel.Password)))
             {
-
-                //Smider den gamle session ud!
-                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                HttpContext.Session.Clear(); // Tømmer sessionen
-                HttpContext.Session.SetString("SessionReset", "true"); // Markerer, at sessionen er nulstillet
-
-
 
                 // Opretter en liste af claims (påstande) om brugeren
                 List<Claim> claims = new List<Claim>
@@ -114,6 +109,14 @@ namespace ImaginaryShop.Controllers
             if (!string.IsNullOrEmpty(_configuration["CookieSettings:AuthCookie"]))
             {
                 Response.Cookies.Delete(_configuration["CookieSettings:AuthCookie"]);
+                HttpContext.Session.Clear(); // Tømmer sessionen
+                foreach (var cookie in Request.Cookies)
+                {
+                    if (cookie.Key.StartsWith(".AspNetCore"))
+                    {
+                        Response.Cookies.Delete(cookie.Key);
+                    }
+                }
             }
 
             return Ok(new { redirectUrl = "/Index" });

@@ -8,9 +8,6 @@ namespace ImaginaryShop.Pages
 {
     public class ShoppingPageModel : BasePageModel
     {
-
-
-
         /// <summary>
         /// Henter indkøbskurven på sessionen, hvis den eksisterer ellers oprettes en ny
         /// </summary>
@@ -31,8 +28,6 @@ namespace ImaginaryShop.Pages
             {
                 //Vi henter kurven fra sessionen
                 sb = JsonSerializer.Deserialize<ShoppingBasket>(basket);
-
-
             }
             return sb;
 
@@ -43,9 +38,7 @@ namespace ImaginaryShop.Pages
         /// <param name="basket">Kurven der gemmes</param>
         protected void SaveBasket(ShoppingBasket basket)
         {
-
             HttpContext.Session.SetString("Basket", JsonSerializer.Serialize(basket));
-
 
         }
     }
